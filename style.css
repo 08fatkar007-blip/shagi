@@ -1,0 +1,1049 @@
+/* ==========================================================
+   «Шаги» — стили
+   1. Цвета и темы   2. Основа   3. Кнопки и поля
+   4. Статистика     5. Сценарии  6. Процессы и шаги
+   7. Окно и уведомления   8. Следующий шаг
+   9. Цветные метки   10. Заметки к шагам   11. Календарь   12. Доска   13. Печать
+   ========================================================== */
+
+
+/* ---------- 1. Цвета и темы ---------- */
+
+:root {
+  --bg: #F2F5FA;
+  --card: #FFFFFF;
+  --ink: #14213D;
+  --mute: #5B6785;
+  --line: #DDE3EE;
+  --acc: #2F5BFF;
+  --acc-ink: #FFFFFF;
+  --ok: #1E9E6A;
+  --warn: #C77700;
+  --bad: #D64545;
+}
+
+/* Тёмная тема по настройке системы (если пользователь не выбрал светлую вручную) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1524;
+    --card: #182036;
+    --ink: #EAF0FF;
+    --mute: #93A0C0;
+    --line: #2A3554;
+    --acc: #6D8CFF;
+    --acc-ink: #0F1524;
+    --ok: #3CCB8E;
+    --warn: #FFB020;
+    --bad: #FF7A7A;
+  }
+}
+
+/* Тёмная тема, выбранная вручную кнопкой «Тема» */
+:root[data-theme="dark"] {
+  --bg: #0F1524;
+  --card: #182036;
+  --ink: #EAF0FF;
+  --mute: #93A0C0;
+  --line: #2A3554;
+  --acc: #6D8CFF;
+  --acc-ink: #0F1524;
+  --ok: #3CCB8E;
+  --warn: #FFB020;
+  --bad: #FF7A7A;
+}
+
+
+/* ---------- 2. Основа ---------- */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16px/1.5 Manrope, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+main {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 24px 18px 70px;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.top-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+h1 {
+  margin: 0 0 10px;
+  font-size: clamp(34px, 7vw, 56px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  margin: 38px 0 14px;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+h3 {
+  margin: 0;
+}
+
+.lead {
+  max-width: 52ch;
+  margin: 0 0 22px;
+  color: var(--mute);
+}
+
+.list {
+  margin-top: 12px;
+}
+
+
+/* ---------- 3. Кнопки и поля ---------- */
+
+button {
+  padding: 9px 16px;
+  border: 0;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--acc);
+  outline-offset: 2px;
+}
+
+/* Основная кнопка */
+.pri {
+  background: var(--acc);
+  color: var(--acc-ink);
+}
+
+.pri:hover {
+  filter: brightness(1.08);
+}
+
+/* Второстепенная кнопка */
+.ghost {
+  background: transparent;
+  color: var(--mute);
+  border: 1px solid var(--line);
+}
+
+.ghost:hover {
+  color: var(--ink);
+  background: var(--line);
+}
+
+/* Маленький размер кнопки */
+.sm {
+  padding: 6px 11px;
+  font-size: 14px;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="number"],
+input[type="search"],
+select,
+textarea {
+  width: 100%;
+  padding: 9px 12px;
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: inherit;
+}
+
+/* Строка с полями и кнопками */
+.add {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.add input[type="text"],
+.add input[type="search"] {
+  flex: 1;
+  min-width: 160px;
+  width: auto;
+}
+
+.add input[type="number"] {
+  width: 90px;
+}
+
+.add input[type="date"],
+.add select {
+  width: auto;
+}
+
+
+/* ---------- 4. Статистика ---------- */
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.stat {
+  min-width: 120px;
+  padding: 10px 16px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.stat b {
+  display: block;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.stat span {
+  color: var(--mute);
+  font-size: 13px;
+}
+
+
+/* ---------- 5. Каталог сценариев ---------- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 12px;
+}
+
+.tpl {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.tpl:hover {
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1);
+  transform: translateY(-2px);
+}
+
+.tpl h3 {
+  font-size: 17px;
+}
+
+.tpl p {
+  flex: 1;
+  margin: 0;
+  color: var(--mute);
+  font-size: 14px;
+}
+
+.tpl .meta {
+  color: var(--mute);
+  font-size: 13px;
+}
+
+.tpl .btns {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+
+/* ---------- 6. Процессы и шаги ---------- */
+
+.proc {
+  margin-bottom: 12px;
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+/* Заголовок процесса (кнопка раскрытия) */
+.proc-head {
+  display: flex;
+  align-items: stretch;
+  transition: background-color 0.15s ease;
+}
+
+.proc-head:hover {
+  background: var(--bg);
+}
+
+.ph {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px;
+  background: none;
+  color: var(--ink);
+  text-align: left;
+  border-radius: 0;
+}
+
+.ph .t {
+  flex: 1;
+  min-width: 0;
+}
+
+.ph .t b {
+  display: block;
+  font-size: 18px;
+}
+
+.ph .t span {
+  color: var(--mute);
+  font-size: 13px;
+}
+
+.pct {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+/* Полоса прогресса */
+.bar {
+  height: 8px;
+  margin-top: 8px;
+  overflow: hidden;
+  background: var(--line);
+  border-radius: 6px;
+}
+
+.bar i {
+  display: block;
+  height: 100%;
+  background: var(--acc);
+  transition: width 0.3s;
+}
+
+.proc.done .bar i {
+  background: var(--ok);
+}
+
+/* Срок */
+.badge {
+  font-weight: 600;
+}
+
+.badge.late {
+  color: var(--bad);
+}
+
+.badge.soon {
+  color: var(--warn);
+}
+
+/* Раскрытое содержимое */
+.body {
+  padding: 0 16px 16px;
+  border-top: 1px solid var(--line);
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 8px;
+  margin: 0 -8px;
+  border-bottom: 1px solid var(--line);
+  border-radius: 8px;
+  transition: background-color 0.15s ease;
+}
+
+.step:hover {
+  background: var(--bg);
+}
+
+.step input {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  accent-color: var(--ok);
+}
+
+.step label {
+  flex: 1;
+  cursor: pointer;
+}
+
+.step.on label {
+  color: var(--mute);
+  text-decoration: line-through;
+}
+
+.step small {
+  color: var(--mute);
+  white-space: nowrap;
+}
+
+/* Маленькие кнопки шага: вверх, вниз, удалить */
+.step .x {
+  padding: 0 5px;
+  background: none;
+  color: var(--mute);
+  font-size: 16px;
+}
+
+.step .x:hover {
+  color: var(--ink);
+}
+
+.add .win {
+  margin: 0;
+}
+
+.win {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding: 7px 14px;
+  background: rgba(30, 158, 106, 0.14);
+  color: var(--ok);
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.win::before {
+  content: "✓";
+}
+
+.empty {
+  padding: 26px;
+  color: var(--mute);
+  text-align: center;
+  border: 2px dashed var(--line);
+  border-radius: 16px;
+}
+
+
+/* ---------- 7. Окно и уведомления ---------- */
+
+dialog {
+  width: min(520px, 92vw);
+  padding: 20px;
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+dialog::backdrop {
+  background: rgba(10, 15, 30, 0.55);
+}
+
+dialog label {
+  display: block;
+  margin: 12px 0 6px;
+  font-weight: 600;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.chip-group {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.chip-group .ren {
+  padding: 6px 9px;
+}
+
+.archive-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 32px;
+  padding: 9px 14px;
+  background: transparent;
+  color: var(--mute);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-weight: 600;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.archive-head:hover {
+  background: var(--line);
+  color: var(--ink);
+}
+
+.archive-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.archive-row .grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.archive-row small {
+  display: block;
+  color: var(--mute);
+}
+
+.hint {
+  margin: 8px 0 0;
+  color: var(--mute);
+  font-size: 14px;
+}
+
+.row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 10px 10px 18px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 12px;
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: opacity 0.2s;
+}
+
+#toast.on {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#toast-undo {
+  flex: none;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+
+/* ---------- 8. Следующий шаг ---------- */
+
+/* Карточка «Следующий шаг» — главный акцент страницы */
+.focus-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 20px;
+  padding: 22px;
+  background: var(--acc);
+  color: var(--acc-ink);
+  border-radius: 18px;
+}
+
+.focus-card.calm {
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.focus-text {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.focus-text span {
+  display: block;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.focus-text b {
+  display: block;
+  margin-top: 4px;
+  font-size: clamp(20px, 4vw, 28px);
+  line-height: 1.2;
+}
+
+.focus-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.focus-clock {
+  font-size: 28px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.focus-btn {
+  background: transparent;
+  color: inherit;
+  border: 2px solid currentColor;
+}
+
+.focus-btn.main {
+  background: var(--acc-ink);
+  color: var(--acc);
+  border-color: var(--acc-ink);
+}
+
+/* Общая белая карточка (календарь, вид «Сегодня») */
+.card-box {
+  padding: 18px 18px 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+.card-box + .card-box {
+  margin-top: 12px;
+}
+
+.group-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2px;
+  font-weight: 800;
+}
+
+.group-head span {
+  color: var(--mute);
+  font-weight: 600;
+}
+
+.group-head.late {
+  color: var(--bad);
+}
+
+/* ---------- 9. Цветные метки ---------- */
+
+.tag {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 7px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.tag-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-swatch {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 50%;
+}
+
+.tag-swatch::before {
+  content: "";
+  display: block;
+  width: 14px;
+  height: 14px;
+  margin: 4px;
+  border-radius: 50%;
+}
+
+.tag-swatch.none {
+  color: var(--mute);
+  border-color: var(--line);
+  font-size: 13px;
+  line-height: 22px;
+}
+
+.tag-swatch.none::before {
+  content: none;
+}
+
+.tag-swatch.sel {
+  border-color: var(--ink);
+}
+
+.tag-red::before, .tag-red { background: #E5484D; }
+.tag-orange::before, .tag-orange { background: #F76B15; }
+.tag-yellow::before, .tag-yellow { background: #F5B400; }
+.tag-green::before, .tag-green { background: #30A46C; }
+.tag-blue::before, .tag-blue { background: #3B82F6; }
+.tag-purple::before, .tag-purple { background: #8B5CF6; }
+
+.tag-swatch.tag-red, .tag-swatch.tag-orange, .tag-swatch.tag-yellow,
+.tag-swatch.tag-green, .tag-swatch.tag-blue, .tag-swatch.tag-purple {
+  background: transparent;
+}
+
+
+/* ---------- 10. Заметки к шагам ---------- */
+
+.step {
+  flex-wrap: wrap;
+}
+
+.step-note {
+  flex-basis: 100%;
+  padding-left: 32px;
+}
+
+.note {
+  color: var(--mute);
+  font-size: 14px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.note a {
+  color: var(--acc);
+}
+
+.note-edit {
+  font-size: 14px;
+}
+
+/* ---------- 10. Календарь ---------- */
+
+.cal-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cal-head b {
+  flex: 1;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-wd {
+  padding: 4px 0;
+  color: var(--mute);
+  font-size: 12px;
+  text-align: center;
+}
+
+.cal-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  aspect-ratio: 1;
+  padding: 2px;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid transparent;
+  border-radius: 10px;
+}
+
+.cal-day.today {
+  border-color: var(--acc);
+}
+
+.cal-day.sel {
+  background: var(--acc);
+  color: var(--acc-ink);
+}
+
+.cal-day .dots {
+  display: flex;
+  gap: 3px;
+  height: 6px;
+}
+
+.dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--acc);
+  border-radius: 50%;
+}
+
+.dot.late {
+  background: var(--bad);
+}
+
+.dot.restart {
+  background: var(--ok);
+}
+
+.cal-day.sel .dot {
+  background: var(--acc-ink);
+}
+
+.cal-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 10px;
+  color: var(--mute);
+  font-size: 13px;
+}
+
+.cal-list {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.cal-list p {
+  margin: 0 0 8px;
+  color: var(--mute);
+}
+
+.cal-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.cal-item .grow {
+  flex: 1;
+  min-width: 0;
+}
+
+
+/* ---------- 11. Доска ---------- */
+
+.view-switch {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 720px) {
+  .board {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kcol {
+  min-height: 140px;
+  padding: 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+/* Колонка, над которой держат перетаскиваемую карточку */
+.kcol.over {
+  border-color: var(--acc);
+  border-style: dashed;
+}
+
+.kcol h3 {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.kcol h3 span,
+.col-empty {
+  color: var(--mute);
+  font-size: 14px;
+}
+
+.col-empty {
+  margin: 0;
+}
+
+.kcol[data-status="done"] .bar i {
+  background: var(--ok);
+}
+
+.kcard {
+  margin-bottom: 10px;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  cursor: grab;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.kcard:hover {
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1);
+  transform: translateY(-2px);
+}
+
+.kcard.dragging {
+  opacity: 0.4;
+}
+
+/* Ручка для перетаскивания и стрелки ▲▼ (ручной порядок процессов) */
+.grip {
+  display: flex;
+  align-items: center;
+  padding: 0 4px 0 14px;
+  color: var(--mute);
+  font-size: 20px;
+  line-height: 1;
+  cursor: grab;
+  user-select: none;
+}
+
+.grip:hover {
+  color: var(--ink);
+}
+
+.grip:active {
+  cursor: grabbing;
+}
+
+.mv {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-right: 10px;
+}
+
+.mv .x {
+  padding: 3px 6px;
+  background: none;
+  color: var(--mute);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.mv .x:hover {
+  color: var(--ink);
+}
+
+.mv .x:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.mv .x:disabled:hover {
+  color: var(--mute);
+}
+
+.proc.dragging {
+  opacity: 0.5;
+}
+
+/* Линия, показывающая, куда встанет карточка */
+.proc.drop-before {
+  box-shadow: 0 -4px 0 var(--acc);
+}
+
+.proc.drop-after {
+  box-shadow: 0 4px 0 var(--acc);
+}
+
+.reorder-hint {
+  margin: 0 0 10px;
+}
+
+/* На телефонах перетаскивание не работает — остаются стрелки ▲▼ */
+@media (hover: none) {
+  .grip {
+    display: none;
+  }
+}
+
+.kcard b {
+  display: block;
+}
+
+.kcard small {
+  display: block;
+  margin-top: 6px;
+  color: var(--mute);
+}
+
+.kbtns {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.kbtns .grow {
+  flex: 1;
+}
+
+
+/* ---------- 12. Печать ---------- */
+
+@media print {
+  .no-print,
+  .add,
+  .x {
+    display: none !important;
+  }
+
+  .proc {
+    break-inside: avoid;
+  }
+}
