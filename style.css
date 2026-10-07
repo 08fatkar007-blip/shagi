@@ -1,0 +1,1283 @@
+/* ==========================================================
+   «Шаги» — стили
+   1. Цвета и темы   2. Основа   3. Кнопки и поля
+   4. Статистика     5. Сценарии  6. Процессы и шаги
+   7. Окно и уведомления   8. Следующий шаг
+   9. Цветные метки   10. Заметки к шагам   11. Календарь   12. Доска   13. Печать
+   ========================================================== */
+
+
+/* ---------- 1. Цвета и темы ---------- */
+
+:root {
+  --bg: #F2F5FA;
+  --card: #FFFFFF;
+  --ink: #14213D;
+  --mute: #5B6785;
+  --line: #DDE3EE;
+  --acc: #2F5BFF;
+  --acc-ink: #FFFFFF;
+  --ok: #1E9E6A;
+  --warn: #C77700;
+  --bad: #D64545;
+}
+
+/* Тёмная тема по настройке системы (если пользователь не выбрал светлую вручную) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1524;
+    --card: #182036;
+    --ink: #EAF0FF;
+    --mute: #93A0C0;
+    --line: #2A3554;
+    --acc: #6D8CFF;
+    --acc-ink: #0F1524;
+    --ok: #3CCB8E;
+    --warn: #FFB020;
+    --bad: #FF7A7A;
+  }
+}
+
+/* Тёмная тема, выбранная вручную кнопкой «Тема» */
+:root[data-theme="dark"] {
+  --bg: #0F1524;
+  --card: #182036;
+  --ink: #EAF0FF;
+  --mute: #93A0C0;
+  --line: #2A3554;
+  --acc: #6D8CFF;
+  --acc-ink: #0F1524;
+  --ok: #3CCB8E;
+  --warn: #FFB020;
+  --bad: #FF7A7A;
+}
+
+
+/* ---------- 2. Основа ---------- */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16px/1.5 Manrope, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+main {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 24px 18px 70px;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.top-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+h1 {
+  margin: 0 0 10px;
+  font-size: clamp(34px, 7vw, 56px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  margin: 38px 0 14px;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+h3 {
+  margin: 0;
+}
+
+.lead {
+  max-width: 52ch;
+  margin: 0 0 22px;
+  color: var(--mute);
+}
+
+.list {
+  margin-top: 12px;
+}
+
+
+/* ---------- 3. Кнопки и поля ---------- */
+
+button {
+  padding: 9px 16px;
+  border: 0;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--acc);
+  outline-offset: 2px;
+}
+
+/* Основная кнопка */
+.pri {
+  background: var(--acc);
+  color: var(--acc-ink);
+}
+
+.pri:hover {
+  filter: brightness(1.08);
+}
+
+/* Второстепенная кнопка */
+.ghost {
+  background: transparent;
+  color: var(--mute);
+  border: 1px solid var(--line);
+}
+
+.ghost:hover {
+  color: var(--ink);
+  background: var(--line);
+}
+
+/* Маленький размер кнопки */
+.sm {
+  padding: 6px 11px;
+  font-size: 14px;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="number"],
+input[type="search"],
+select,
+textarea {
+  width: 100%;
+  padding: 9px 12px;
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: inherit;
+}
+
+/* Строка с полями и кнопками */
+.add {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.add input[type="text"],
+.add input[type="search"] {
+  flex: 1;
+  min-width: 160px;
+  width: auto;
+}
+
+.add input[type="number"] {
+  width: 90px;
+}
+
+.add input[type="date"],
+.add select {
+  width: auto;
+}
+
+
+/* ---------- 4. Статистика ---------- */
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin-top: 14px;
+  color: var(--mute);
+  font-size: 14px;
+}
+
+.stats:empty { display: none; }
+.stats b { color: var(--ink); font-weight: 700; }
+
+
+/* ---------- 5. Каталог сценариев ---------- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 12px;
+}
+
+.tpl {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.tpl:hover {
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1);
+  transform: translateY(-2px);
+}
+
+.tpl h3 {
+  font-size: 17px;
+}
+
+.tpl p {
+  flex: 1;
+  margin: 0;
+  color: var(--mute);
+  font-size: 14px;
+}
+
+.tpl .meta {
+  color: var(--mute);
+  font-size: 13px;
+}
+
+.tpl .btns {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+
+/* ---------- 6. Процессы и шаги ---------- */
+
+.proc {
+  margin-bottom: 12px;
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+/* Заголовок процесса (кнопка раскрытия) */
+.proc-head {
+  display: flex;
+  align-items: stretch;
+  transition: background-color 0.15s ease;
+}
+
+.proc-head:hover {
+  background: var(--bg);
+}
+
+.ph {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px;
+  background: none;
+  color: var(--ink);
+  text-align: left;
+  border-radius: 0;
+}
+
+.ph .t {
+  flex: 1;
+  min-width: 0;
+}
+
+.ph .t b {
+  display: block;
+  font-size: 18px;
+}
+
+.ph .t span {
+  color: var(--mute);
+  font-size: 13px;
+}
+
+.pct {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+/* Полоса прогресса */
+.bar {
+  height: 8px;
+  margin-top: 8px;
+  overflow: hidden;
+  background: var(--line);
+  border-radius: 6px;
+}
+
+.bar i {
+  display: block;
+  height: 100%;
+  background: var(--acc);
+  transition: width 0.3s;
+}
+
+.proc.done .bar i {
+  background: var(--ok);
+}
+
+/* Срок */
+.badge {
+  font-weight: 600;
+}
+
+.badge.late {
+  color: var(--bad);
+}
+
+.badge.soon {
+  color: var(--warn);
+}
+
+/* Раскрытое содержимое */
+.body {
+  padding: 0 16px 16px;
+  border-top: 1px solid var(--line);
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 8px;
+  margin: 0 -8px;
+  border-bottom: 1px solid var(--line);
+  border-radius: 8px;
+  transition: background-color 0.15s ease;
+}
+
+.step:hover {
+  background: var(--bg);
+}
+
+.step input {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  accent-color: var(--ok);
+}
+
+.step label {
+  flex: 1;
+  cursor: pointer;
+}
+
+.step.on label {
+  color: var(--mute);
+  text-decoration: line-through;
+}
+
+.step small {
+  color: var(--mute);
+  white-space: nowrap;
+}
+
+/* Маленькие кнопки шага: вверх, вниз, удалить */
+.step .x {
+  padding: 0 5px;
+  background: none;
+  color: var(--mute);
+  font-size: 16px;
+}
+
+.step .x:hover {
+  color: var(--ink);
+}
+
+.add .win {
+  margin: 0;
+}
+
+.win {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding: 7px 14px;
+  background: rgba(30, 158, 106, 0.14);
+  color: var(--ok);
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.win::before {
+  content: "✓";
+}
+
+.empty {
+  padding: 26px;
+  color: var(--mute);
+  text-align: center;
+  border: 2px dashed var(--line);
+  border-radius: 16px;
+}
+
+
+/* ---------- 7. Окно и уведомления ---------- */
+
+dialog {
+  width: min(520px, 92vw);
+  padding: 20px;
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+dialog::backdrop {
+  background: rgba(10, 15, 30, 0.55);
+}
+
+dialog label {
+  display: block;
+  margin: 12px 0 6px;
+  font-weight: 600;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.chip-group {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.chip-group .ren {
+  padding: 6px 9px;
+}
+
+.archive-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 32px;
+  padding: 9px 14px;
+  background: transparent;
+  color: var(--mute);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-weight: 600;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.archive-head:hover {
+  background: var(--line);
+  color: var(--ink);
+}
+
+.archive-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.archive-row .grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.archive-row small {
+  display: block;
+  color: var(--mute);
+}
+
+.hint {
+  margin: 8px 0 0;
+  color: var(--mute);
+  font-size: 14px;
+}
+
+.row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 10px 10px 18px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 12px;
+  font-weight: 600;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%);
+  transition: opacity 0.2s;
+}
+
+#toast.on {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#toast-undo {
+  flex: none;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+
+/* ---------- 8. Следующий шаг ---------- */
+
+/* Карточка «Следующий шаг» — главный акцент страницы */
+.focus-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 20px;
+  padding: 22px;
+  background: var(--acc);
+  color: var(--acc-ink);
+  border-radius: 18px;
+}
+
+.focus-card.calm {
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.focus-text {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.focus-text span {
+  display: block;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.focus-text b {
+  display: block;
+  margin-top: 4px;
+  font-size: clamp(20px, 4vw, 28px);
+  line-height: 1.2;
+}
+
+.focus-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.focus-clock {
+  font-size: 28px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.focus-btn {
+  background: transparent;
+  color: inherit;
+  border: 2px solid currentColor;
+}
+
+.focus-btn.main {
+  background: var(--acc-ink);
+  color: var(--acc);
+  border-color: var(--acc-ink);
+}
+
+/* Общая белая карточка (календарь, вид «Сегодня») */
+.card-box {
+  padding: 18px 18px 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+.card-box + .card-box {
+  margin-top: 12px;
+}
+
+.group-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2px;
+  font-weight: 800;
+}
+
+.group-head span {
+  color: var(--mute);
+  font-weight: 600;
+}
+
+.group-head.late {
+  color: var(--bad);
+}
+
+/* ---------- 9. Цветные метки ---------- */
+
+.tag {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 7px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.tag-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-swatch {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 50%;
+}
+
+.tag-swatch::before {
+  content: "";
+  display: block;
+  width: 14px;
+  height: 14px;
+  margin: 4px;
+  border-radius: 50%;
+}
+
+.tag-swatch.none {
+  color: var(--mute);
+  border-color: var(--line);
+  font-size: 13px;
+  line-height: 22px;
+}
+
+.tag-swatch.none::before {
+  content: none;
+}
+
+.tag-swatch.sel {
+  border-color: var(--ink);
+}
+
+.tag-red::before, .tag-red { background: #E5484D; }
+.tag-orange::before, .tag-orange { background: #F76B15; }
+.tag-yellow::before, .tag-yellow { background: #F5B400; }
+.tag-green::before, .tag-green { background: #30A46C; }
+.tag-blue::before, .tag-blue { background: #3B82F6; }
+.tag-purple::before, .tag-purple { background: #8B5CF6; }
+
+.tag-swatch.tag-red, .tag-swatch.tag-orange, .tag-swatch.tag-yellow,
+.tag-swatch.tag-green, .tag-swatch.tag-blue, .tag-swatch.tag-purple {
+  background: transparent;
+}
+
+
+/* ---------- 10. Заметки к шагам ---------- */
+
+.step {
+  flex-wrap: wrap;
+}
+
+.step-note {
+  flex-basis: 100%;
+  padding-left: 32px;
+}
+
+.note {
+  color: var(--mute);
+  font-size: 14px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.note a {
+  color: var(--acc);
+}
+
+.note-edit {
+  font-size: 14px;
+}
+
+/* ---------- 10. Календарь ---------- */
+
+.cal-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cal-head b {
+  flex: 1;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-wd {
+  padding: 4px 0;
+  color: var(--mute);
+  font-size: 12px;
+  text-align: center;
+}
+
+.cal-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  aspect-ratio: 1;
+  padding: 2px;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid transparent;
+  border-radius: 10px;
+}
+
+.cal-day.today {
+  border-color: var(--acc);
+}
+
+.cal-day.sel {
+  background: var(--acc);
+  color: var(--acc-ink);
+}
+
+.cal-day .dots {
+  display: flex;
+  gap: 3px;
+  height: 6px;
+}
+
+.dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--acc);
+  border-radius: 50%;
+}
+
+.dot.late {
+  background: var(--bad);
+}
+
+.dot.restart {
+  background: var(--ok);
+}
+
+.cal-day.sel .dot {
+  background: var(--acc-ink);
+}
+
+.cal-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 10px;
+  color: var(--mute);
+  font-size: 13px;
+}
+
+.cal-list {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.cal-list p {
+  margin: 0 0 8px;
+  color: var(--mute);
+}
+
+.cal-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.cal-item .grow {
+  flex: 1;
+  min-width: 0;
+}
+
+
+/* ---------- 11. Доска ---------- */
+
+.view-switch {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 720px) {
+  .board {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kcol {
+  min-height: 140px;
+  padding: 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+/* Колонка, над которой держат перетаскиваемую карточку */
+.kcol.over {
+  border-color: var(--acc);
+  border-style: dashed;
+}
+
+.kcol h3 {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.kcol h3 span,
+.col-empty {
+  color: var(--mute);
+  font-size: 14px;
+}
+
+.col-empty {
+  margin: 0;
+}
+
+.kcol[data-status="done"] .bar i {
+  background: var(--ok);
+}
+
+.kcard {
+  margin-bottom: 10px;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  cursor: grab;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.kcard:hover {
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.1);
+  transform: translateY(-2px);
+}
+
+.kcard.dragging {
+  opacity: 0.4;
+}
+
+/* Стрелки ▲▼ (ручной порядок процессов) */
+.mv {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-right: 10px;
+}
+
+.mv .x {
+  padding: 3px 6px;
+  background: none;
+  color: var(--mute);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.mv .x:hover {
+  color: var(--ink);
+}
+
+.mv .x:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.mv .x:disabled:hover {
+  color: var(--mute);
+}
+
+.kcard b {
+  display: block;
+}
+
+.kcard small {
+  display: block;
+  margin-top: 6px;
+  color: var(--mute);
+}
+
+.kbtns {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.kbtns .grow {
+  flex: 1;
+}
+
+
+/* ---------- 12. Печать ---------- */
+
+@media print {
+  .no-print,
+  .add,
+  .x {
+    display: none !important;
+  }
+
+  .proc {
+    break-inside: avoid;
+  }
+}
+
+
+/* ---------- Режим фокуса ---------- */
+.fm {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.fm[hidden] { display: none; }
+
+body.fm-open { overflow: hidden; }
+body.fm-open #toast { z-index: 1000; }
+
+.fm-box {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin: auto;
+  padding: 28px 24px 20px;
+  text-align: center;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+}
+
+.fm-close { position: absolute; top: 12px; right: 12px; }
+.fm-meta { color: var(--mute); font-size: 14px; padding: 0 36px; }
+
+.fm-bar {
+  height: 6px;
+  margin: 14px 0 22px;
+  overflow: hidden;
+  background: var(--line);
+  border-radius: 3px;
+}
+
+.fm-bar i { display: block; height: 100%; background: var(--acc); }
+.fm-step { font-size: clamp(22px, 5vw, 32px); font-weight: 800; line-height: 1.25; overflow-wrap: anywhere; }
+.fm-note { margin-top: 10px; color: var(--mute); white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.fm-clock {
+  margin-top: 22px;
+  font-size: clamp(48px, 14vw, 88px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.fm-clock.over { color: var(--bad); }
+.fm-plan { margin-top: 4px; color: var(--mute); }
+
+.fm-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 22px;
+}
+
+.fm-hint { margin-top: 16px; font-size: 12px; color: var(--mute); }
+
+.fm-table { margin-top: 16px; overflow-x: auto; text-align: left; }
+.fm-table table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.fm-table th, .fm-table td { padding: 6px 8px; border-bottom: 1px solid var(--line); }
+.fm-table th { color: var(--mute); font-weight: 600; }
+.fm-table td:nth-child(n+2) { white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+
+/* ---------- Шаги по очереди ---------- */
+.step.locked { opacity: .55; }
+.step.locked label, .step.locked input { cursor: not-allowed; }
+
+
+/* ---------- Меню «Поделиться и сохранить» ---------- */
+.more { flex: 1 1 100%; }
+.more summary { display: inline-block; list-style: none; cursor: pointer; user-select: none; }
+.more summary::-webkit-details-marker { display: none; }
+.more summary::after { content: " ▾"; }
+.more[open] summary::after { content: " ▴"; }
+.more-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+
+/* ---------- Кнопки создания сверху, резервная копия — тихой строкой внизу ---------- */
+.create-row { margin-bottom: 14px; }
+
+.data-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--mute);
+  font-size: 14px;
+}
+
+
+/* ---------- Шапка: подписи не переносятся ---------- */
+.top-actions button { white-space: nowrap; }
+
+/* ---------- Строка шага: кнопки приглушены, пока на шаг не навели мышь ---------- */
+.step .x { opacity: .35; transition: opacity .15s; }
+.step:hover .x,
+.step:focus-within .x,
+.step .x:focus-visible { opacity: 1; }
+@media (hover: none) { .step .x { opacity: 1; } }
+
+/* ---------- «Дополнительно» ---------- */
+.extra { margin: 8px 0; padding: 0; }
+.extra summary { cursor: pointer; padding: 8px 0; font-weight: 600; list-style: none; user-select: none; }
+.extra summary::-webkit-details-marker { display: none; }
+.extra summary::before { content: "▸ "; color: var(--mute); }
+.extra[open] summary::before { content: "▾ "; }
+.extra summary span { margin-left: 6px; font-weight: 400; font-size: 13px; color: var(--mute); }
+
+
+/* ---------- Один ряд управления списком: вид · поиск · порядок ---------- */
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+.toolbar .view-switch { margin: 0; }
+.toolbar input[type="search"] { flex: 1 1 200px; min-width: 0; }
+
+
+.lead[hidden] { display: none; }
+
+
+/* ---------- Каталог сценариев сворачивается ---------- */
+.catalog summary { cursor: pointer; list-style: none; user-select: none; }
+.catalog summary::-webkit-details-marker { display: none; }
+.catalog summary::before { content: "▸ "; color: var(--mute); }
+.catalog[open] summary::before { content: "▾ "; }
+.catalog summary h2 { display: inline-block; }
+
+
+/* ---------- «Есть время»: подборка шагов под свободные минуты ---------- */
+.fit { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; color: var(--mute); font-size: 14px; }
+.fit-list { flex-basis: 100%; padding: 10px 14px; background: var(--card); border: 1px solid var(--line); border-radius: 14px; }
+.fit-title { margin-bottom: 6px; color: var(--ink); font-weight: 600; }
+.fit-row { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 6px 0; border-top: 1px solid var(--line); color: var(--ink); }
+.fit-row span { overflow-wrap: anywhere; }
+.fit-row i { display: block; font-style: normal; font-size: 13px; color: var(--mute); }
+
+
+/* ---------- «Отложить на потом» — тихая ссылка в карточке следующего шага ---------- */
+.link-btn {
+  display: block;
+  margin-top: 6px;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  color: inherit;
+  font-size: 13px;
+  opacity: .75;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link-btn:hover { opacity: 1; transform: none; box-shadow: none; }
+
+
+/* ---------- Панель «Изменить шаг» ---------- */
+.step-tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 4px; }
+.step-tools button:disabled { opacity: .4; cursor: default; }
+.step .x[aria-expanded="true"] { opacity: 1; color: var(--acc); }
+
+/* Сенсорные экраны: крупная цель нажатия вместо четырёх мелких кнопок */
+@media (pointer: coarse) {
+  .step .x { min-width: 40px; min-height: 40px; font-size: 18px; }
+}
+
+
+.catalog[hidden] { display: none; }
+
+/* ---------- Читаемее: время шага и стрелки порядка процессов ---------- */
+.step small { font-size: 13px; }
+.mv .x { padding: 4px 8px; font-size: 14px; }
+@media (pointer: coarse) { .mv .x { min-height: 32px; min-width: 36px; } }
+
+
+/* ==========================================================
+   Обновление внешнего вида («рефреш»).
+   Чтобы вернуть прежний вид, удалите этот блок до конца файла.
+   Главная деталь — полоса прогресса «по ступенькам»: одна ступенька на шаг.
+   ========================================================== */
+
+:root {
+  --bar-gap: var(--card);
+}
+
+body { -webkit-font-smoothing: antialiased; }
+
+/* Заголовки спокойнее и ближе к содержимому */
+h2 { margin: 34px 0 12px; font-size: 20px; letter-spacing: -0.01em; }
+
+/* Полоса прогресса: ступеньки равны шагам, сплошная заливка не меняется */
+.bar { height: 10px; border-radius: 999px; }
+.bar i { border-radius: 999px; }
+
+.bar[style*="--n"] { position: relative; }
+.bar[style*="--n"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(to right, transparent calc(100% - 3px), var(--bar-gap) 0);
+  background-size: calc(100% / var(--n)) 100%;
+}
+
+.proc-head:hover { --bar-gap: var(--bg); }
+.kcard { --bar-gap: var(--bg); }
+
+/* Формы: карточки мягче, кнопки-переключатели — «таблетки», главное действие крупнее */
+.proc { border-radius: 18px; box-shadow: 0 1px 2px rgba(20, 33, 61, 0.06), 0 8px 18px -12px rgba(20, 33, 61, 0.2); }
+.view-switch .sm, .top-actions .sm, .fit .sm { border-radius: 999px; }
+.create-row .pri { padding: 11px 20px; border-radius: 12px; }
+
+/* В тёмной теме тени не нужны: форму держат цвет и линия */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .proc { box-shadow: none; }
+}
+:root[data-theme="dark"] .proc { box-shadow: none; }
+
+/* Движение только по действию человека; тем, кто просит меньше анимации, — без неё */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+
+/* ---------- Доводка по скриншотам ---------- */
+
+/* Стандартные элементы браузера (чекбоксы, значок календаря, полосы прокрутки) подстраиваются под тему */
+:root { color-scheme: light; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { color-scheme: dark; }
+}
+:root[data-theme="dark"] { color-scheme: dark; }
+
+/* Выпадающие списки: небольшая стрелка одного размера в любой теме */
+select,
+.add select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%238B96B3' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px 8px;
+}
+
+/* Меню «Поделиться и сохранить» выглядит как остальные кнопки */
+.more summary { padding: 6px 12px; border-radius: 10px; font-size: 14px; font-weight: 600; }
+
+/* Раскрывающиеся разделы («Календарь», «Готовые сценарии»): строка со стрелкой справа, видно, что можно раскрыть */
+.catalog summary { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+.catalog summary::before { content: none; }
+.catalog summary::after {
+  content: "";
+  width: 9px;
+  height: 9px;
+  margin: 0 6px 4px 0;
+  border-right: 2px solid var(--mute);
+  border-bottom: 2px solid var(--mute);
+  transform: rotate(45deg);
+  transition: transform 0.15s ease;
+}
+.catalog[open] summary::after { margin-bottom: 0; transform: rotate(-135deg); }
+.catalog summary h2 { margin: 22px 0 10px; }
+.catalog summary:hover h2 { color: var(--acc); }
+.catalog[open] summary { margin-bottom: 14px; }
+
+
+/* ---------- Быстрые кнопки срока ---------- */
+.quick-due { margin-top: 8px; }
+.quick-due span { color: var(--mute); font-size: 14px; }
+
+
+/* ---------- Новый шаг на секунду подсвечивается: видно, куда он встал ---------- */
+@keyframes fresh-step {
+  from { background: color-mix(in srgb, var(--acc) 24%, transparent); }
+  to { background: transparent; }
+}
+.step.fresh { animation: fresh-step 1.4s ease-out; }
