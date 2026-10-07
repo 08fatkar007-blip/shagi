@@ -1281,3 +1281,61 @@ select,
   to { background: transparent; }
 }
 .step.fresh { animation: fresh-step 1.4s ease-out; }
+
+
+/* ---------- Режим фокуса: ступеньки как в списке, строка «Дальше» ---------- */
+.fm-bar { height: 8px; border-radius: 999px; }
+.fm-bar i { border-radius: 999px; }
+.fm-bar[style*="--n"] { position: relative; }
+.fm-bar[style*="--n"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(to right, transparent calc(100% - 3px), var(--card) 0);
+  background-size: calc(100% / var(--n)) 100%;
+}
+
+.fm-next {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--mute);
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+
+/* ---------- Звёздочка «закрепить наверху» ---------- */
+.pin {
+  align-self: center;
+  padding: 4px 8px;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  color: var(--mute);
+  font-size: 18px;
+  line-height: 1;
+  opacity: 0.55;
+  cursor: pointer;
+}
+.pin:hover { opacity: 1; transform: none; box-shadow: none; }
+.pin.on { color: var(--acc); opacity: 1; }
+@media (pointer: coarse) { .pin { min-width: 40px; min-height: 40px; } }
+
+
+/* ---------- Плашка «не удаётся сохранить данные» ---------- */
+.save-warning {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--bad);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bad) 10%, var(--card));
+  font-size: 14px;
+}
+.save-warning span { flex: 1 1 260px; }
+.save-warning[hidden] { display: none; }
