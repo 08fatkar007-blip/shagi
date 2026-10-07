@@ -217,8 +217,38 @@ function loadState() {
 function saveState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    showSaveWarning(false);
   } catch (error) {
-    // Хранилище недоступно — приложение продолжит работать без сохранения
+    // Хранилище недоступно или заполнено: приложение работает дальше, но человек должен об этом знать
+    showSaveWarning(true);
+  }
+}
+
+/** Плашка «не удаётся сохранить»; создаётся при первой ошибке. */
+let saveBanner = null;
+
+/** Заметная плашка вверху страницы, пока данные не удаётся сохранить. */
+function showSaveWarning(visible) {
+  if (!saveBanner) {
+    if (!visible) return;
+    const banner = document.createElement("div");
+    banner.id = "save-warning";
+    banner.className = "save-warning no-print";
+    banner.setAttribute("role", "alert");
+    banner.innerHTML = `<span>Не удаётся сохранить данные в этом браузере (возможно, включён приватный режим или нет места). После закрытия вкладки изменения пропадут.</span>
+      <button class="pri sm" data-action="warnBackup">Скачать резервную копию</button>`;
+    document.querySelector("main")?.prepend(banner);
+    saveBanner = banner;
+  }
+  saveBanner.hidden = !visible;
+}
+
+/** Просим браузер хранить данные надёжно: без этого он может очистить их при нехватке места. */
+function requestPersistentStorage() {
+  try {
+    navigator.storage?.persist?.()?.catch?.(() => {});
+  } catch (error) {
+    // не поддерживается — ничего страшного
   }
 }
 
@@ -500,7 +530,9 @@ const SORTERS = {
 /** Применяет выбранную сортировку, не трогая порядок хранения процессов в данных. */
 function sortProcesses(list) {
   const sorter = SORTERS[sortMode];
-  return sorter ? [...list].sort(sorter) : list;
+  const sorted = sorter ? [...list].sort(sorter) : list;
+  // Закреплённые всегда выше остальных; порядок внутри каждой группы сохраняется
+  return [...sorted.filter((process) => process.pinned), ...sorted.filter((process) => !process.pinned)];
 }
 
 /** Развёрнут ли список архива (сбрасывается при перезагрузке страницы). */
@@ -1393,6 +1425,8 @@ function renderProcess(process, position = {}) {
           </div>
           <span class="pct">${progress.percent}%</span>
         </button>
+        <button class="pin${process.pinned ? " on" : ""}" data-action="togglePin" ${idAttr} aria-pressed="${Boolean(process.pinned)}"
+          aria-label="${process.pinned ? "Открепить" : "Закрепить наверху"}" title="${process.pinned ? "Открепить" : "Закрепить наверху"}">${process.pinned ? "★" : "☆"}</button>
         ${moveButtons}
       </div>
       ${isOpen ? renderProcessBody(process, progress) : ""}
@@ -1408,15 +1442,16 @@ function renderCard(process, columnIndex) {
   const back = columnIndex > 0
     ? `<button class="ghost sm" data-action="moveLeft" ${id} aria-label="Переместить назад">←</button>`
     : "";
+  // В последней колонке «вперёд» некуда: вместо стрелки — убрать готовый процесс в архив
   const forward = columnIndex < BOARD_COLUMNS.length - 1
     ? `<button class="ghost sm" data-action="moveRight" ${id} aria-label="Переместить вперёд">→</button>`
-    : "";
+    : `<button class="ghost sm" data-action="archive" ${id}>В архив</button>`;
 
   return `
     <div class="kcard" draggable="true" ${id}>
       <b>${tagDot(process)}${escapeHtml(process.title)}</b>
       <div class="bar"${barSteps(progress)}><i style="width:${progress.percent}%"></i></div>
-      <small>${progress.done}/${progress.total} шагов${renderDueBadge(process, progress)}</small>
+      <small>${progress.done}/${progress.total} шагов${progress.minutesLeft ? ` · осталось ${formatMinutes(progress.minutesLeft)}` : ""}${renderDueBadge(process, progress)}</small>
       ${next ? `<small>Дальше: ${escapeHtml(next.text)}</small>` : ""}
       <div class="kbtns">${back}<button class="ghost sm grow" data-action="openProcess" ${id}>Открыть</button>${forward}</div>
     </div>`;
@@ -1577,7 +1612,15 @@ function renderProcessList() {
     if (state.view === "board") html = renderBoard(visible);
     else if (state.view === "today") html = renderToday(visible);
     else {
-      html = visible.map((process, i) => renderProcess(process, { first: i === 0, last: i === visible.length - 1 })).join("");
+      html = visible
+        .map((process, i) =>
+          renderProcess(process, {
+            // стрелки двигают только внутри группы: закреплённые отдельно от остальных
+            first: i === 0 || Boolean(visible[i - 1].pinned) !== Boolean(process.pinned),
+            last: i === visible.length - 1 || Boolean(visible[i + 1].pinned) !== Boolean(process.pinned),
+          })
+        )
+        .join("");
     }
   }
 
@@ -1709,6 +1752,11 @@ function renderCalendar() {
 function applyTheme() {
   if (state.theme) document.documentElement.setAttribute("data-theme", state.theme);
   else document.documentElement.removeAttribute("data-theme");
+
+  // Цвет верхней полосы браузера и установленного приложения — под текущую тему
+  const dark = state.theme ? state.theme === "dark" : Boolean(window.matchMedia?.("(prefers-color-scheme: dark)").matches);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content = dark ? "#0F1524" : "#F2F5FA";
 }
 
 function render() {
@@ -1852,11 +1900,12 @@ function renderFm() {
     <div class="fm-box">
       <button class="fm-close ghost sm" data-action="fmClose" aria-label="Выйти из режима фокуса">✕</button>
       <div class="fm-meta">${escapeHtml(process.title)} · шаг ${fm.pos + 1} из ${fm.queue.length}</div>
-      <div class="fm-bar"><i style="width:${percent}%"></i></div>
+      <div class="fm-bar"${fm.queue.length >= 2 && fm.queue.length <= 24 ? ` style="--n:${fm.queue.length}"` : ""}><i style="width:${percent}%"></i></div>
       <div class="fm-step">${escapeHtml(step.text)}</div>
       ${step.note ? `<div class="fm-note">${escapeHtml(step.note)}</div>` : ""}
       <div class="fm-clock${fm.plannedSeconds && fm.elapsed > fm.plannedSeconds ? " over" : ""}" id="fm-time">${clock(fm.elapsed)}</div>
       <div class="fm-plan">${plan}</div>
+      ${renderFmNext(process)}
       <div class="fm-actions">
         <button class="ghost" id="fm-pause" data-action="fmPause">${fm.running ? "Пауза" : "Продолжить"}</button>
         ${process.ordered ? "" : '<button class="ghost" data-action="fmSkip">Пропустить</button>'}
@@ -1865,6 +1914,14 @@ function renderFm() {
       <div class="fm-hint">Esc — выйти. Выполненные шаги уже сохранены.</div>
     </div>`;
   $("fm-done")?.focus();
+}
+
+/** Что будет после текущего шага, чтобы в сессии не было неизвестности. */
+function renderFmNext(process) {
+  const nextStep = process.steps[fm.queue[fm.pos + 1]];
+  if (!nextStep) return "";
+  const time = nextStep.minutes ? ` · ${formatMinutes(nextStep.minutes)}` : "";
+  return `<div class="fm-next">Дальше: ${escapeHtml(nextStep.text)}${time}</div>`;
 }
 
 /** Итог сессии: сколько времени заняли шаги против плана. */
@@ -2099,6 +2156,17 @@ const ACTIONS = {
     if (mode === "clear") process.due = "";
     else if (mode === "shift") process.due = shiftDate(process.due < today() ? today() : process.due, Number(days));
     else process.due = shiftDate(today(), Number(days));
+  },
+
+  // Кнопка в плашке «не удаётся сохранить»: сразу скачать резервную копию
+  warnBackup() {
+    $("export-btn").click();
+    return false;
+  },
+
+  // Закрепить процесс наверху списка (и открепить)
+  togglePin({ process }) {
+    process.pinned = !process.pinned;
   },
 
   // Строгий порядок: шаг открывается, только когда сделаны все предыдущие
@@ -2633,8 +2701,28 @@ window.addEventListener("appinstalled", () => {
   $("install-btn").hidden = true;
 });
 
+/** iPhone и iPad: у Safari нет события установки, поэтому подсказываем вручную. */
+function isIos() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent || "") || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+function isInstalled() {
+  return navigator.standalone === true || Boolean(window.matchMedia?.("(display-mode: standalone)").matches);
+}
+
+function setupInstallHint() {
+  if (!isIos() || isInstalled() || !location.protocol?.startsWith("http")) return;
+  $("install-btn").textContent = "Как установить";
+  $("install-btn").hidden = false;
+}
+
+setupInstallHint();
+
 $("install-btn").addEventListener("click", async () => {
-  if (!installPrompt) return;
+  if (!installPrompt) {
+    if (isIos()) toast("Нажмите «Поделиться» в Safari и выберите «На экран “Домой”»");
+    return;
+  }
   installPrompt.prompt();
   await installPrompt.userChoice;
   installPrompt = null;
@@ -2873,6 +2961,7 @@ function importFromUrl() {
 importFromUrl();
 if (restartDueProcesses()) saveState();
 $("calendar-box").open = readUiFlag("shagi-calendar-open"); // календарь свёрнут, пока человек сам не раскроет
+requestPersistentStorage();
 $("catalog").open = state.processes.length < 3; // новичку каталог на виду, опытному — свёрнут
 render();
 
